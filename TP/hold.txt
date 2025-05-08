@@ -1,0 +1,162 @@
+#include <stdio.h>
+#include <math.h>
+#include "universalOrdered.h"
+#include "quickSort.h"
+#include "insertionSort.h"
+#include "readInput.h"
+
+
+
+
+struct Entrada *entradaGlobal;
+
+
+void inicializaEntradaGlobal()
+{
+    entradaGlobal = lerEntrada();
+}
+
+
+void imprimeEstatisticas(struct Estatisticas *est)
+{
+    printf("mps %d cost %.9f cmp %d move %d calls %d\n",
+           est->mps, est->cost, est->cmp, est->move, est->calls);
+}
+
+// Calcula custo com base nos parâmetros da entrada e estatísticas
+double calculaCusto(struct Entrada *entrada, struct Estatisticas *est)
+{
+    return entrada->a * est->cmp + entrada->b * est->move + entrada->c * est->calls;
+}
+
+double diffCustoExtremos(struct Estatisticas *custo, int numMPS)
+{
+    return fabs(custo[0].cost - custo[numMPS - 1].cost);
+}
+
+double menorCusto(struct Estatisticas *custo, int numMPS)
+{
+    double menor = custo[0].cost;
+    for (int i = 1; i < numMPS; i++)
+    {
+        if (custo[i].cost < menor)
+        {
+            menor = custo[i].cost;
+        }
+    }
+    return menor;
+}
+
+int determinaLimiarParticao()
+{
+    int *V = entradaGlobal->vetor;
+    int tam = entradaGlobal->tam;
+    double limiarCusto = entradaGlobal->limiarCusto;
+
+    int minMPS = 2;
+    int maxMPS = tam;
+    int passoMPS = (maxMPS - minMPS) / 5;
+    if (passoMPS == 0) passoMPS = 1;
+
+    double diffCusto = limiarCusto + 1;
+    int numMPS = 0;
+    int iter = 0;
+    struct Estatisticas custo[6];
+    int mpsArr[6];
+    int idxMenor = 0;
+
+    // Fix loop condition: keep looping while diffCusto > limiarCusto and at least 2 MPS values
+    while ((diffCusto > limiarCusto) && (maxMPS > minMPS)) {
+        numMPS = 0;
+        printf("iter %d\n", iter++);
+        for (int t = minMPS; t <= maxMPS ; t += passoMPS) {
+            // Always copy from the original input vector
+            int tempV[tam];
+            for (int i = 0; i < tam; i++) tempV[i] = V[i];
+
+            custo[numMPS].cmp = 0;
+            custo[numMPS].move = 0;
+            custo[numMPS].calls = 0;
+            custo[numMPS].mps = t;
+            // Use limiarQuebras = 0 to force testing partition threshold
+            ordenadorUniversal(tempV, tam, t, 0, &custo[numMPS]);
+            custo[numMPS].cost = calculaCusto(entradaGlobal, &custo[numMPS]);
+            imprimeEstatisticas(&custo[numMPS]);
+            mpsArr[numMPS] = t;
+            numMPS++;
+        }
+        // Encontrar índice do menor custo
+        idxMenor = 0;
+        for (int i = 1; i < numMPS; i++) {
+            if (custo[i].cost < custo[idxMenor].cost) idxMenor = i;
+        }
+        // Calcular diffCusto entre extremos da faixa
+        diffCusto = fabs(custo[numMPS - 1].cost - custo[0].cost);
+
+        printf("nummps %d limParticao %d mpsdiff %.6f\n", numMPS, mpsArr[idxMenor], diffCusto);
+        printf("\n");
+
+        calculaNovaFaixa(idxMenor, &minMPS, &maxMPS, &passoMPS, mpsArr, numMPS);
+    }
+    return mpsArr[idxMenor];
+}
+
+int getMPS(int *mpsArr, int idx)
+{
+    return mpsArr[idx];
+}
+
+void calculaNovaFaixa(int limParticao, int *minMPS, int *maxMPS, int *passoMPS, int *mpsArr, int numMPS)
+{
+    int newMin, newMax;
+    if (limParticao == 0)
+    {
+        newMin = 0;
+        newMax = 2;
+    }
+    else if (limParticao == numMPS - 1)
+    {
+        newMin = numMPS - 3;
+        newMax = numMPS - 1;
+    }
+    else
+    {
+        newMin = limParticao - 1;
+        newMax = limParticao + 1;
+    }
+    *minMPS = getMPS(mpsArr, newMin);
+    *maxMPS = getMPS(mpsArr, newMax);
+    *passoMPS = (*maxMPS - *minMPS) / 5;
+    if (*passoMPS == 0)
+        (*passoMPS)++;
+}
+
+int contaQuebras(int *V, int tam)
+{
+    int quebras = 0;
+    for (int i = 1; i < tam; i++)
+    {
+        if (V[i] < V[i - 1])
+            quebras++;
+    }
+    return quebras;
+}
+
+void ordenadorUniversal(int *V, int tam, int minTamParticao, int limiarQuebras, struct Estatisticas *est)
+{
+    if (contaQuebras(V, tam) < limiarQuebras)
+    {
+        insertionSort(V, tam, est);
+    }
+    else
+    {
+        if (tam > minTamParticao)
+        {
+            quickSort(V, tam, est);
+        }
+        else
+        {
+            insertionSort(V, tam, est);
+        }
+    }
+}
