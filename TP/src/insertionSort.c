@@ -2,7 +2,7 @@
 
 void insertionSort(int *V, int tam, struct Estatistica *est)
 {
-    est->call++;
+    est->calls++;
 
     int aux, j;
     for (int i = 1; i < tam; i++)

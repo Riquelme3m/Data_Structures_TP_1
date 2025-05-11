@@ -1,4 +1,5 @@
 #include "quickSort.h"
+#include <stdio.h>
 
 
 
@@ -45,58 +46,35 @@ static void partition3(int *V, int l, int r, int *i, int *j, struct Estatistica 
 
 
 static void quickSort3Ins(int *V, int l, int r, struct Estatistica *est) {
+    est->calls++; // Count every call, including the initial and all recursive calls
     int i, j;
     if (l >= r) return;
     partition3(V, l, r, &i, &j, est);
 
     if (j - l <= 50) {
-        est->call++;
         insertionSort(V + l, j - l + 1, est);
     } else if (l < j) {
-        est->call++;
         quickSort3Ins(V, l, j, est);
     }
 
     if (r - i <= 50) {
-        est->call++;
         insertionSort(V + i, r - i + 1, est);
     } else if (i < r) {
-        est->call++;
         quickSort3Ins(V, i, r, est);
     }
 }
 
 
 void quickSort(int *V, int tam, struct Estatistica *est) {
+    est->calls=10; 
     quickSort3Ins(V, 0, tam - 1, est);
 }
 
 
-#include <stdio.h>
+
 
 void printArray(int *V, int n) {
     for (int i = 0; i < n; i++)
         printf("%d ", V[i]);
     printf("\n");
-}
-
-int main() {
-    int V[] = {5, 2, 9, 1, 5, 6, 7, 3, 8, 4, 0, -1, 10, 15, 12, 11, 14, 13};
-    int n = sizeof(V) / sizeof(V[0]);
-    struct Estatistica est = {0, 0, 0};
-
-    printf("Original array:\n");
-    printArray(V, n);
-
-    quickSort(V, n, &est);
-
-    printf("Sorted array:\n");
-    printArray(V, n);
-
-    printf("Statistics:\n");
-    printf("Comparisons: %d\n", est.cmp);
-    printf("Moves: %d\n", est.move);
-    printf("Calls: %d\n", est.call);
-
-    return 0;
 }
