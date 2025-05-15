@@ -2,76 +2,87 @@
 #include <stdio.h>
 
 
-
-static void swap(int *a, int *b) {
+static void swap(int *a, int *b, struct Estatistica *est) {
     int tmp = *a;
     *a = *b;
     *b = tmp;
+    est->move += 3;
 }
 
-
-static int medianOf3(int *V, int l, int r, struct Estatistica *est) {
-    int m = l + (r - l) / 2;
-    
-    if (V[l] > V[m]) { swap(&V[l], &V[m]); est->cmp++; est->move+=3; }
-    else est->cmp++;
-    if (V[m] > V[r]) { swap(&V[m], &V[r]); est->cmp++; est->move+=3; }
-    else est->cmp++;
-    if (V[l] > V[m]) { swap(&V[l], &V[m]); est->cmp++; est->move+=3; }
-    else est->cmp++;
-    
-    swap(&V[l], &V[m]); est->move+=3;
-    return V[l];
+// median of 3 integers (does NOT count statistics)
+static int median(int a, int b, int c)
+{
+    if ((a <= b) && (b <= c))
+        return b; // a b c
+    if ((a <= c) && (c <= b))
+        return c; // a c b
+    if ((b <= a) && (a <= c))
+        return a; // b a c
+    if ((b <= c) && (c <= a))
+        return c; // b c a
+    if ((c <= a) && (a <= b))
+        return a; // c a b
+    return b;   // c b a
 }
-
 
 static void partition3(int *V, int l, int r, int *i, int *j, struct Estatistica *est) {
-    int pivot = medianOf3(V, l, r, est);
-    *i = l; *j = r;
-    int left = l + 1, right = r;
-    while (left <= right) {
-        while (left <= r && V[left] < pivot) { left++; est->cmp++; }
-        if (left <= r) est->cmp++;
-        while (right >= l && V[right] > pivot) { right--; est->cmp++; }
-        if (right >= l) est->cmp++;
-        if (left <= right) {
-            swap(&V[left], &V[right]); est->move+=3;
-            left++; right--;
+    est->calls++; // incrementa o número de chamadas de função
+
+    *i = l;
+    *j = r;
+
+    int pivot = median(V[l], V[r], V[(*i + *j) / 2]); // mediana dos três
+
+    do {
+        while (V[*i] < pivot) {
+            est->cmp++;
+            (*i)++;
         }
-    }
-    swap(&V[l], &V[right]); est->move+=3;
-    *i = left;
-    *j = right;
+        est->cmp++; // última comparação que falha
+
+        while (V[*j] > pivot) {
+            est->cmp++;
+            (*j)--;
+        }
+        est->cmp++; // última comparação que falha
+
+        if (*i <= *j) {
+            swap(&V[*i], &V[*j], est);
+            (*i)++;
+            (*j)--;
+        }
+    } while (*i <= *j);
 }
 
+static void quickSort3Ins(int *V, int l, int r, int minTamParticao, struct Estatistica *est) {
+    est->calls++;
+    if (l >= r)
+        return;
 
-static void quickSort3Ins(int *V, int l, int r, struct Estatistica *est) {
-    est->calls++; // Count every call, including the initial and all recursive calls
-    int i, j;
-    if (l >= r) return;
+    int i = 0, j = 0;
     partition3(V, l, r, &i, &j, est);
 
-    if (j - l <= 50) {
-        insertionSort(V + l, j - l + 1, est);
-    } else if (l < j) {
-        quickSort3Ins(V, l, j, est);
+    if (l < j) {
+        if ((j - l) < minTamParticao) {
+            insertionSort(V, l, j, est); // insertionSort will increment est->calls itself
+        } else {
+            quickSort3Ins(V, l, j, minTamParticao, est);
+        }
     }
 
-    if (r - i <= 50) {
-        insertionSort(V + i, r - i + 1, est);
-    } else if (i < r) {
-        quickSort3Ins(V, i, r, est);
+    if (i < r) {
+        if ((r - i) < minTamParticao) {
+            insertionSort(V, i, r, est); // insertionSort will increment est->calls itself
+        } else {
+            quickSort3Ins(V, i, r, minTamParticao, est);
+        }
     }
 }
 
-
-void quickSort(int *V, int tam, struct Estatistica *est) {
-    est->calls=10; 
-    quickSort3Ins(V, 0, tam - 1, est);
+void quickSort(int *V, int tam, int minTamParticao, struct Estatistica *est) {
+    
+    quickSort3Ins(V, 0, tam - 1, minTamParticao, est);
 }
-
-
-
 
 void printArray(int *V, int n) {
     for (int i = 0; i < n; i++)

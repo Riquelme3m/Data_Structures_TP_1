@@ -1,24 +1,21 @@
 #include "insertionSort.h"
 
-void insertionSort(int *V, int tam, struct Estatistica *est)
+void insertionSort(int *V, int l, int r, struct Estatistica *est)
 {
     est->calls++;
-
-    int aux, j;
-    for (int i = 1; i < tam; i++)
-    {
-        est->move++; 
-        aux = V[i];
-        j = i - 1;
-
-        while ((est->cmp++, j >= 0) && (aux < V[j]))
-        {
-            est->move++; 
+    for (int i = l + 1; i <= r; i++) {
+        int aux = V[i];
+        est->move++;
+        int j = i - 1;
+        while (j >= l && V[j] > aux) {
+            est->cmp++;
             V[j + 1] = V[j];
+            est->move++;
             j--;
         }
-        est->move++;
+        est->cmp++;
+        // Always write back aux, even if not needed
         V[j + 1] = aux;
+        est->move++;
     }
-    return;
 }

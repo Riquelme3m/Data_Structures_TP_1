@@ -2,7 +2,6 @@
 #define INSERTIONSORT_H
 
 #include "estatistica.h"
-
-void insertionSort(int* V,int tam,struct Estatistica *est);
+void insertionSort(int *V, int l, int r, struct Estatistica *est);
 
 #endif

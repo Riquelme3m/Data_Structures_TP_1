@@ -4,6 +4,6 @@
 #include "estatistica.h"
 #include "insertionSort.h"
 
-void quickSort(int *V, int tam,struct Estatistica *est);
+void quickSort(int *V, int tam, int minTamParticao, struct Estatistica *est);
 
 #endif

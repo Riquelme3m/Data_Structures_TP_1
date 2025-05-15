@@ -12,7 +12,7 @@ int determinaLimiarParticao(int *V, int tam, int limiarCusto, struct Estatistica
     struct particaoDeMenorCustoEntreTodasTestadas pmenorCusto; // Least cost and partition out of all iterations
     pmenorCusto.custo = 10000000000;
     pmenorCusto.particao = 0;
-    double diffCusto;
+    float diffCusto;
     diffCusto = limiarCusto + 1;
     int numMPS = 6;
 
@@ -25,19 +25,21 @@ int determinaLimiarParticao(int *V, int tam, int limiarCusto, struct Estatistica
 
         for (int t = minMPS; t <= maxMPS; t += passoMPS)
         {
-            int X[t];
-            for (int i = 0; i < t; i++)
+            int X[tam];
+            for (int i = 0; i < tam; i++)
             {
                 X[i] = V[i];
             }
-            
-            ordernadorUniversal(X, t, t-1, 0, est);
-            custos[numMPS].custo = calculaCusto(entrada, est);
-            custos[numMPS].particao = t;
-            printf("mps %d cost %f cmp %d move %d calls %d\n", t, custos[numMPS].custo, est->cmp, est->move, est->calls);
+
+            // Reset statistics before each run
             est->cmp = 0;
             est->move = 0;
             est->calls = 0;
+
+            ordernadorUniversal(X, tam, t, 0, est);
+            custos[numMPS].custo = calculaCusto(entrada, est);
+            custos[numMPS].particao = t;
+            printf("mps %d cost %.9f cmp %d move %d calls %d\n", t, custos[numMPS].custo, est->cmp, est->move, est->calls);
             numMPS++;
         }
         int menorCusto = custos[0].custo;
@@ -67,7 +69,7 @@ int determinaLimiarParticao(int *V, int tam, int limiarCusto, struct Estatistica
                 indexMax = i;
         }
         diffCusto = fabs(custos[indexMin].custo - custos[indexMax].custo);
-        printf("nummps %d limParticao %d mpsdiff %f", numMPS, custos[limParticao].particao, diffCusto);
+        printf("nummps %d limParticao %d mpsdiff %.6f", numMPS, custos[limParticao].particao, diffCusto);
         printf("\n\n");
         iter++;
     }

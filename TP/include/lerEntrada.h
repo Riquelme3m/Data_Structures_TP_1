@@ -3,13 +3,14 @@
 
 struct Entrada
 {
-    int limiarCusto;
+    int seed;
+    double limiarCusto;
     double a, b, c;
     int tam;
     int *vetor;
 };
 
-struct Entrada* lerEntrada();
+struct Entrada* lerEntrada(const char *filename);
 void liberarEntrada(struct Entrada* entrada);
 
 #endif

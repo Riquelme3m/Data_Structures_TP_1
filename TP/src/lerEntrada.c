@@ -2,23 +2,26 @@
 #include <stdlib.h>
 #include "lerEntrada.h"
 
-struct Entrada *lerEntrada()
+struct Entrada *lerEntrada(const char *filename)
 {
+    // printf("Trying to open file: %s\n", filename); // Debug print
     struct Entrada *entrada = malloc(sizeof(struct Entrada));
     if (!entrada)
         return NULL;
 
-    FILE *f = fopen("entrada.txt", "r");
-    if (!f) {
+    FILE *f = fopen(filename, "r");
+    if (!f)
+    {
         free(entrada);
         return NULL;
     }
 
-    fscanf(f, "%d", &entrada->limiarCusto);
-    fscanf(f, "%lf", &entrada->a);
-    fscanf(f, "%lf", &entrada->b);
-    fscanf(f, "%lf", &entrada->c);
-    fscanf(f, "%d", &entrada->tam);
+    fscanf(f, "%d", &entrada->seed);         // 1
+    fscanf(f, "%lf", &entrada->limiarCusto); // 10.000000
+    fscanf(f, "%lf", &entrada->a);           // 0.012156
+    fscanf(f, "%lf", &entrada->b);           // -0.006378
+    fscanf(f, "%lf", &entrada->c);           // 0.0172897
+    fscanf(f, "%d", &entrada->tam);          // 1000
 
     entrada->vetor = malloc(entrada->tam * sizeof(int));
     if (!entrada->vetor)
