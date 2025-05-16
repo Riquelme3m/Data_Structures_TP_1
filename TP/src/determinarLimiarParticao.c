@@ -6,10 +6,10 @@ int determinaLimiarParticao(int *V, int tam, int limiarCusto, struct Estatistica
     int minMPS = 2;
     int maxMPS = tam;
     int passoMPS = (maxMPS - minMPS) / 5;
-    int limParticao; // Index of minimum cost on a iterations
+    int limParticao; 
     struct custos custos[6];
     int iter = 0;
-    struct particaoDeMenorCustoEntreTodasTestadas pmenorCusto; // Least cost and partition out of all iterations
+    struct particaoDeMenorCustoEntreTodasTestadas pmenorCusto; 
     pmenorCusto.custo = 10000000000;
     pmenorCusto.particao = 0;
     float diffCusto;
