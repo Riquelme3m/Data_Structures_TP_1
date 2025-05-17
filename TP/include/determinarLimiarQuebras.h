@@ -20,7 +20,7 @@ struct limiarDeMenorCustoEntreTodasTestadas {
 
 
 int shuffleVector(int *vet,int size,int numShuffle);
-int determinaLimiarQuebras(int *V, int tam, int limiarCusto, struct Estatistica *est, struct Entrada *entrada);
+int determinaLimiarQuebras(int *V, int tam, int limiarCusto, struct Estatistica *est, struct Entrada *entrada,int resultado);
 void calculaNovaFaixaQuebras(int limQuebras, int* minLQ, int* maxLQ, int* passoLQ, int numLQ, struct custosQuebras* custos);
 
 #endif

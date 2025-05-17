@@ -23,16 +23,15 @@ int main(int argc, char *argv[])
     printf("size %d seed %d breaks %d",entrada->tam,entrada->seed,numeroQuebras);
     printf("\n\n");
     int resultado = determinaLimiarParticao(entrada->vetor, entrada->tam, entrada->limiarCusto, est, entrada);
-
+    
     
 
-    // Cria nova estatística para determinarLimiarQuebras
     struct Estatistica *estQuebras = malloc(sizeof(struct Estatistica));
     estQuebras->cmp = 0;
     estQuebras->move = 0;
     estQuebras->calls = 0;
 
-    int resultadoQuebras = determinaLimiarQuebras(entrada->vetor, entrada->tam, entrada->limiarCusto, estQuebras, entrada);
+    int resultadoQuebras = determinaLimiarQuebras(entrada->vetor, entrada->tam, entrada->limiarCusto, estQuebras, entrada,resultado);
     
 
     free(est);

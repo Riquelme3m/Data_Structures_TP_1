@@ -31,7 +31,6 @@ int determinaLimiarParticao(int *V, int tam, int limiarCusto, struct Estatistica
                 X[i] = V[i];
             }
 
-            // Reset statistics before each run
             est->cmp = 0;
             est->move = 0;
             est->calls = 0;
@@ -42,23 +41,27 @@ int determinaLimiarParticao(int *V, int tam, int limiarCusto, struct Estatistica
             printf("mps %d cost %.9f cmp %d move %d calls %d\n", t, custos[numMPS].custo, est->cmp, est->move, est->calls);
             numMPS++;
         }
-        int menorCusto = custos[0].custo;
-        limParticao = 0;
+        
+        double menorCusto = 100000000;
+        int minIndex = 0;
+        int minParticaoValue = custos[0].particao;
 
-        for (int i = 1; i < numMPS; i++)
+        for (int i = 0; i < numMPS; i++)
         {
             if (custos[i].custo < menorCusto)
             {
                 menorCusto = custos[i].custo;
-                limParticao = i; // The index of minimum cost
+                minIndex = i;
+                minParticaoValue = custos[i].particao;
             }
         }
-        if (custos[limParticao].custo < pmenorCusto.custo)
+        limParticao = minParticaoValue;
+        if (menorCusto < pmenorCusto.custo)
         {
-            pmenorCusto.custo = custos[limParticao].custo;
-            pmenorCusto.particao = custos[limParticao].particao;
-        };
-        calculaNovaFaixa(limParticao, &minMPS, &maxMPS, &passoMPS, numMPS, custos);
+            pmenorCusto.custo = menorCusto;
+            pmenorCusto.particao = minParticaoValue;
+        }
+        calculaNovaFaixa(minIndex, &minMPS, &maxMPS, &passoMPS, numMPS, custos);
 
         int indexMin = -1, indexMax = -1;
         for (int i = 0; i < numMPS; i++)
@@ -69,7 +72,7 @@ int determinaLimiarParticao(int *V, int tam, int limiarCusto, struct Estatistica
                 indexMax = i;
         }
         diffCusto = fabs(custos[indexMin].custo - custos[indexMax].custo);
-        printf("nummps %d limParticao %d mpsdiff %.6f", numMPS, custos[limParticao].particao, diffCusto);
+        printf("nummps %d limParticao %d mpsdiff %.6f", numMPS, limParticao, diffCusto);
         printf("\n\n");
         iter++;
     }

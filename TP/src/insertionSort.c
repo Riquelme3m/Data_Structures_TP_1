@@ -14,7 +14,6 @@ void insertionSort(int *V, int l, int r, struct Estatistica *est)
             j--;
         }
         est->cmp++;
-        // Always write back aux, even if not needed
         V[j + 1] = aux;
         est->move++;
     }
