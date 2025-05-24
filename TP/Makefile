@@ -2,7 +2,7 @@ CC = gcc
 CFLAGS = -Wall -Iinclude
 SRC = $(wildcard src/*.c)
 OBJ = $(SRC:src/%.c=obj/%.o)
-BIN = bin/tp1.out
+BIN = bin/tp3.out
 
 all: $(BIN)
 

@@ -1,4 +1,6 @@
 #include "determinarLimiarParticao.h"
+#include <stdio.h>
+#include <time.h>
 
 int determinaLimiarParticao(int *V, int tam, int limiarCusto, struct Estatistica *est, struct Entrada *entrada)
 {
@@ -6,10 +8,10 @@ int determinaLimiarParticao(int *V, int tam, int limiarCusto, struct Estatistica
     int minMPS = 2;
     int maxMPS = tam;
     int passoMPS = (maxMPS - minMPS) / 5;
-    int limParticao; 
-    struct custos custos[6];
+    int limParticao;
+    struct custos custos[9];
     int iter = 0;
-    struct particaoDeMenorCustoEntreTodasTestadas pmenorCusto; 
+    struct particaoDeMenorCustoEntreTodasTestadas pmenorCusto;
     pmenorCusto.custo = 10000000000;
     pmenorCusto.particao = 0;
     float diffCusto;
@@ -35,13 +37,26 @@ int determinaLimiarParticao(int *V, int tam, int limiarCusto, struct Estatistica
             est->move = 0;
             est->calls = 0;
 
+            clock_t start = clock();
             ordernadorUniversal(X, tam, t, 0, est);
+            clock_t end = clock();
+            double elapsed = (double)(end - start) / CLOCKS_PER_SEC;
+
             custos[numMPS].custo = calculaCusto(entrada, est);
             custos[numMPS].particao = t;
             printf("mps %d cost %.9f cmp %d move %d calls %d\n", t, custos[numMPS].custo, est->cmp, est->move, est->calls);
+
+            // Write results to results.txt
+            FILE *fout = fopen("results.txt", "a");
+            if (fout)
+            {
+                fprintf(fout, "mps,%d,calls,%d,cmp,%d,move,%d,time,%.9f\n", t, est->calls, est->cmp, est->move, elapsed);
+                fclose(fout);
+            }
+
             numMPS++;
         }
-        
+
         double menorCusto = 100000000;
         int minIndex = 0;
         int minParticaoValue = custos[0].particao;

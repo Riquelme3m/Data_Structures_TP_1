@@ -1,8 +1,10 @@
 #include "determinarLimiarParticao.h"
 #include "determinarLimiarQuebras.h"
+#include <time.h> // add this
 
 int main(int argc, char *argv[])
 {
+    clock_t start = clock(); // start timing
     if (argc < 2) {
         printf("Uso: %s <arquivo_entrada.txt>\n", argv[0]);
         return 1;
@@ -37,6 +39,10 @@ int main(int argc, char *argv[])
     free(est);
     free(estQuebras);
     liberarEntrada(entrada);
+
+    clock_t end = clock(); // end timing
+    double elapsed = (double)(end - start) / CLOCKS_PER_SEC;
+    printf("Execution time: %f seconds\n", elapsed);
 
     return 0;
 }

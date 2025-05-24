@@ -1,6 +1,10 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include "lerEntrada.h"
+#include "elemento.h"
+
+
 
 struct Entrada *lerEntrada(const char *filename)
 {
@@ -37,7 +41,7 @@ struct Entrada *lerEntrada(const char *filename)
 
     fclose(f);
     return entrada;
-};
+}
 
 void liberarEntrada(struct Entrada *entrada)
 {

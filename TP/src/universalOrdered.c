@@ -8,7 +8,7 @@ void ordernadorUniversal(int *V, int tam, int minTamParticao, int limiarQuebras,
 
     if (numeroQuebras < limiarQuebras)
     {
-        insertionSort(V, 0,tam-1, est);
+        insertionSort(V, 0, tam-1, est);
     }
     else
     {
@@ -18,7 +18,7 @@ void ordernadorUniversal(int *V, int tam, int minTamParticao, int limiarQuebras,
         }
         else
         {
-            insertionSort(V, 0,tam-1, est);
+            insertionSort(V, 0, tam-1, est);
         }
     }
 }

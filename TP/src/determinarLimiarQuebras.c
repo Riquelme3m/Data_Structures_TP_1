@@ -1,9 +1,11 @@
 #include "determinarLimiarQuebras.h"
+#include <stdio.h>
+#include <time.h>
+#include <stdlib.h>
 
 int shuffleVector(int *vet, int size, int numShuffle)
 {
     int p1 = 0, p2 = 0, temp;
-
     for (int t = 0; t < numShuffle; t++)
     {
         while (p1 == p2)
@@ -11,13 +13,11 @@ int shuffleVector(int *vet, int size, int numShuffle)
             p1 = (int)(drand48() * size);
             p2 = (int)(drand48() * size);
         }
-
         temp = vet[p1];
         vet[p1] = vet[p2];
         vet[p2] = temp;
         p1 = p2 = 0;
     }
-
     return 0;
 }
 
@@ -77,9 +77,19 @@ int determinaLimiarQuebras(int *V, int tam, int limiarCusto, struct Estatistica 
             shuffleVector(X, tam, t);
 
             est->cmp = 0; est->move = 0; est->calls = 0;
+            clock_t start_qs = clock();
             ordernadorUniversal(X, tam, limiarParticao, 0, est);
+            clock_t end_qs = clock();
+            double elapsed_qs = (double)(end_qs - start_qs) / CLOCKS_PER_SEC;
+
             custos[idx].custoQS = calculaCusto(entrada, est);
             printf("qs lq %d cost %.9f cmp %d move %d calls %d\n", t, custos[idx].custoQS, est->cmp, est->move, est->calls);
+
+            FILE *fout = fopen("results.txt", "a");
+            if (fout) {
+                fprintf(fout, "qs_lq,%d,calls,%d,cmp,%d,move,%d,time,%.9f\n", t, est->calls, est->cmp, est->move, elapsed_qs);
+                fclose(fout);
+            }
 
             for (int i = 0; i < tam; i++)
                 X[i] = V[i];
@@ -88,9 +98,19 @@ int determinaLimiarQuebras(int *V, int tam, int limiarCusto, struct Estatistica 
             shuffleVector(X, tam, t);
 
             est->cmp = 0; est->move = 0; est->calls = 0;
+            clock_t start_in = clock();
             ordernadorUniversal(X, tam, tam, tam+1, est);
+            clock_t end_in = clock();
+            double elapsed_in = (double)(end_in - start_in) / CLOCKS_PER_SEC;
+
             custos[idx].custoINS = calculaCusto(entrada, est);
             printf("in lq %d cost %.9f cmp %d move %d calls %d\n", t, custos[idx].custoINS, est->cmp, est->move, est->calls);
+
+            fout = fopen("results.txt", "a");
+            if (fout) {
+                fprintf(fout, "in_lq,%d,calls,%d,cmp,%d,move,%d,time,%.9f\n", t, est->calls, est->cmp, est->move, elapsed_in);
+                fclose(fout);
+            }
 
             custos[idx].quebras = t;
             idx++;

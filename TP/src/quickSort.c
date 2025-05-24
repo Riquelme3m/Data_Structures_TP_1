@@ -1,5 +1,6 @@
 #include "quickSort.h"
 #include <stdio.h>
+#include <string.h>
 
 static void swap(int *a, int *b, struct Estatistica *est) {
     int tmp = *a;
